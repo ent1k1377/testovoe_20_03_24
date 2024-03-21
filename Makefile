@@ -1,4 +1,4 @@
-.PHONY: run docker
+.PHONY: run docker migrateinit migrateup migratedown sqlc
 
 run:
 	go run cmd/main.go
@@ -14,3 +14,7 @@ migrateup:
 
 migratedown:
 	migrate -path db/migration -database "postgresql://root:root@localhost:5411/root?sslmode=disable" -verbose down
+
+sqlc:
+	sqlc generate
+

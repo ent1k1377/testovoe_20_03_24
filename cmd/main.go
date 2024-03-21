@@ -5,6 +5,8 @@ import (
 	"github.com/ent1k1377/testovoe_20_03_24/internal"
 	"github.com/joho/godotenv"
 	"log"
+	"strconv"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -21,10 +23,24 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to db", err)
 	}
-	if conn.Ping() == nil {
-		log.Fatal("connection not established")
-	}
+
+	var currentDate time.Time
+	err = conn.QueryRow("select current_date").Scan(&currentDate)
+	log.Printf("current date: %s\n", currentDate.Format("2006-01-02"))
+
 	log.Printf("All good!")
+}
+
+func recordData(arg []string) []int {
+	newA := make([]int, len(arg))
+	for i, _ := range arg {
+		elem, err := strconv.Atoi(arg[i])
+		if err == nil {
+			return nil
+		}
+		newA[i] = elem
+	}
+	return nil
 }
 
 func loadEnvironment() error {
