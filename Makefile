@@ -1,7 +1,7 @@
 .PHONY: run docker migrateinit migrateup migratedown sqlc
 
 run:
-	go run cmd/main.go
+	go run cmd/main.go 10 11 14 15
 
 docker:
 	docker compose up --build

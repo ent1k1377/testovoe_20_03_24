@@ -2,13 +2,13 @@ package main
 
 import (
 	"database/sql"
+	db "github.com/ent1k1377/testovoe_20_03_24/db/sqlc"
 	"github.com/ent1k1377/testovoe_20_03_24/internal"
+	"github.com/ent1k1377/testovoe_20_03_24/internal/util"
 	"github.com/joho/godotenv"
-	"log"
-	"strconv"
-	"time"
-
 	_ "github.com/lib/pq"
+	"log"
+	"os"
 )
 
 func main() {
@@ -17,30 +17,21 @@ func main() {
 		log.Fatal("cannot load environment", err)
 	}
 
-	config := internal.NewConfig()
+	config := util.NewConfig()
 
 	conn, err := sql.Open(config.DatabaseDriver, config.DatabaseURL)
 	if err != nil {
 		log.Fatal("cannot connect to db", err)
 	}
 
-	var currentDate time.Time
-	err = conn.QueryRow("select current_date").Scan(&currentDate)
-	log.Printf("current date: %s\n", currentDate.Format("2006-01-02"))
+	store := db.NewStore(conn)
 
-	log.Printf("All good!")
-}
-
-func recordData(arg []string) []int {
-	newA := make([]int, len(arg))
-	for i, _ := range arg {
-		elem, err := strconv.Atoi(arg[i])
-		if err == nil {
-			return nil
-		}
-		newA[i] = elem
+	ordersId, err := util.ConvertStringsToIntegers(os.Args[1:])
+	if err != nil {
+		log.Fatal("Incorrect transmitted data", err)
 	}
-	return nil
+
+	internal.Start(store, ordersId)
 }
 
 func loadEnvironment() error {
