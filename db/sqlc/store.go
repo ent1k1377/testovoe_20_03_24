@@ -7,7 +7,7 @@ type SQLStore struct {
 	db *sql.DB
 }
 
-// NewStore creates a new SQLStore
+// NewStore создает новый экземпляр хранилища SQL.
 func NewStore(db *sql.DB) *SQLStore {
 	return &SQLStore{
 		Queries: New(db),
