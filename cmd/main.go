@@ -31,14 +31,8 @@ func main() {
 	// Создание хранилища для взаимодействия с базой данных
 	store := db.NewStore(conn)
 
-	// Преобразование аргументов командной строки в числа
-	ordersId, err := util.ConvertStringsToIntegers(os.Args[1:])
-	if err != nil {
-		log.Fatal("Incorrect transmitted data", err)
-	}
-
 	// Запуск приложения
-	if err := app.StartProcessingOrders(store, ordersId); err != nil {
+	if err := app.StartProcessingOrders(store, os.Args[1:]); err != nil {
 		log.Fatal("app doesnt work", err)
 	}
 }

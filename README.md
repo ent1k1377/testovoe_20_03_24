@@ -17,8 +17,16 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@lat
 3. **Запуск программы**
 ```bash
 make docker
+```
+```bash
 make migrateup
+```
+```bash
 make sqlc
+```
+#### Также скопируйте запросы с файла db/insert_base_data.sql и добавте в бд
+
+```bash
 make run
 ```
 
@@ -33,6 +41,9 @@ make run
 - **internal**
   - **app** (Основное логика)
   - **util** (Дополнительные модули)
+
+### Доп. ссылки
+Схема БД: https://shorturl.at/iqrsV
 
 ### Что люди говорят об этом проекте:
 > Невероятно крутая работа, возьмите его за 300К/НС. © Мой друг Рома (Первая личность)<br>

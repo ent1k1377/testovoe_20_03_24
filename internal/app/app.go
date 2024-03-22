@@ -3,6 +3,9 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/ent1k1377/testovoe_20_03_24/internal/util"
+	"log"
+	"os"
 	"sort"
 	"strings"
 
@@ -19,15 +22,22 @@ type order struct {
 }
 
 // StartProcessingOrders начинает обработку заказов.
-func StartProcessingOrders(sqlStore *db.SQLStore, orderNumbers []int64) error {
+func StartProcessingOrders(sqlStore *db.SQLStore, orderNumbers []string) error {
 	ctx := context.Background()
 
+	// Преобразование аргументов командной строки в числа
+	ordersId, err := util.ConvertStringsToIntegers(os.Args[1:])
+	if err != nil {
+		log.Fatal("Incorrect transmitted data", err)
+	}
+
 	// Получаем информацию о заказах из хранилища данных SQL.
-	ordersInfo, err := sqlStore.Queries.GetOrderInfo(ctx, orderNumbers)
+	ordersInfo, err := sqlStore.Queries.GetOrderInfo(ctx, ordersId)
 	if err != nil {
 		return fmt.Errorf("ошибка при получении информации о заказах: %w", err)
 	}
 
+	fmt.Printf("=+=+=+=\nСтраница сборки заказов %s\n\n", strings.Join(orderNumbers, ","))
 	return processOrders(ordersInfo)
 }
 
