@@ -9,7 +9,8 @@ type Repository struct {
 	db                  *sql.DB
 	orderItemRepository repository.OrderItemRepository
 	productRepository   repository.ProductRepository
-	productShelf        repository.ProductsShelf
+	productShelf        repository.ProductsShelfRepository
+	shelf               repository.ShelfRepository
 }
 
 func NewRepository(db *sql.DB) *Repository {
@@ -36,12 +37,22 @@ func (r *Repository) Product() repository.ProductRepository {
 	return r.productRepository
 }
 
-func (r *Repository) ProductShelf() repository.ProductsShelf {
+func (r *Repository) ProductShelf() repository.ProductsShelfRepository {
 	if r.productShelf != nil {
 		return r.productShelf
 	}
 
-	r.productShelf = &ProductsShelve{repo: r}
+	r.productShelf = &ProductsShelveRepository{repo: r}
 
 	return r.productShelf
+}
+
+func (r *Repository) Shelf() repository.ShelfRepository {
+	if r.productShelf != nil {
+		return r.shelf
+	}
+
+	r.shelf = &ShelfRepository{repo: r}
+
+	return r.shelf
 }

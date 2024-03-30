@@ -8,7 +8,6 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
-	"os"
 )
 
 func main() {
@@ -31,8 +30,11 @@ func main() {
 	// Создание хранилища для взаимодействия с базой данных
 	repo := postgres.NewRepository(conn)
 
+	// Создание приложения
+	a := app.NewApp(repo)
+
 	// Запуск приложения
-	if err := app.StartProcessingOrders(repo, os.Args[1:]); err != nil {
+	if err := a.Run(); err != nil {
 		log.Fatal("app doesnt work: ", err)
 	}
 }

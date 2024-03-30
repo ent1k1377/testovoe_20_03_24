@@ -6,7 +6,7 @@ import (
 	"github.com/ent1k1377/testovoe_20_03_24/internal/repository/postgres/util"
 )
 
-type ProductsShelve struct {
+type ProductsShelveRepository struct {
 	repo *Repository
 }
 
@@ -19,7 +19,7 @@ func GetProductsShelvesIds(products []model.Product) []int64 {
 	return productsIds
 }
 
-func (r *ProductsShelve) GetProductsShelves(productsIds []int64) ([]model.ProductsShelf, error) {
+func (r *ProductsShelveRepository) GetProductsShelves(productsIds []int64) ([]model.ProductsShelf, error) {
 	query := "select * from products_shelves where product_id in (%s)"
 
 	rows, err := r.repo.db.Query(util.GetQuery(query, len(productsIds)), util.ConvertInt64SliceToInterfaceSlice(productsIds)...)

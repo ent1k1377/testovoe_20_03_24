@@ -5,7 +5,8 @@ import "github.com/ent1k1377/testovoe_20_03_24/internal/repository/model"
 type Storage interface {
 	OrderItem() OrderItemRepository
 	Product() ProductRepository
-	ProductShelf() ProductsShelf
+	ProductShelf() ProductsShelfRepository
+	Shelf() ShelfRepository
 }
 
 type OrderItemRepository interface {
@@ -17,6 +18,10 @@ type ProductRepository interface {
 	GetProducts(orderItemsIds []int64) ([]model.Product, error)
 }
 
-type ProductsShelf interface {
+type ProductsShelfRepository interface {
 	GetProductsShelves(products []int64) ([]model.ProductsShelf, error)
+}
+
+type ShelfRepository interface {
+	GetAllShelves() ([]model.Shelf, error)
 }

@@ -2,28 +2,21 @@
 ##### Проект предлагает выдачу информации по заказам.
 
 ### Для удобства весь проект можно запустить за несколько шагов
-#### Для этого нужен Docker, golang, migrate, sqlc
+#### Для этого нужен Docker, golang, migrate
 
-1. **Установка sqlc**
-```bash
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-```
-
-2. **Установка migrate**
+1. **Установка migrate**
 ```bash
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 ```
 
-3. **Запуск программы**
+2. **Запуск программы**
 ```bash
 make docker
 ```
 ```bash
 make migrateup
 ```
-```bash
-make sqlc
-```
+
 #### Также скопируйте запросы с файла db/insert_base_data.sql и добавте в бд
 
 ```bash
