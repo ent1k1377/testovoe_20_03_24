@@ -1,4 +1,4 @@
--- Вставка записей в таблицу products
+-- Вставка записей в таблицу product
 INSERT INTO products (id, name, price, stock_quantity)
 VALUES (1, 'Ноутбук', 1000, 10),
        (2, 'Телевизор', 2000, 20),
@@ -7,7 +7,7 @@ VALUES (1, 'Ноутбук', 1000, 10),
        (5, 'Часы', 300, 3),
        (6, 'Микрофон', 150, 2);
 
--- Вставка записей в таблицу shelves
+-- Вставка записей в таблицу shelf
 INSERT INTO shelves (id, name)
 VALUES (1, 'А'),
        (2, 'Б'),
@@ -22,7 +22,7 @@ VALUES (10, '2024-03-20 10:00:00'),
        (14, '2024-03-25 09:00:00'),
        (15, '2024-03-26 14:00:00');
 
--- Вставка записей в таблицу products_shelves
+-- Вставка записей в таблицу products_shelve
 INSERT INTO products_shelves (product_id, shelves_id, is_primary)
 VALUES (1, 1, true),
        (2, 1, true),
@@ -34,7 +34,7 @@ VALUES (1, 1, true),
        (5, 1, false),
        (6, 5, true);
 
--- Вставка записей в таблицу order_items
+-- Вставка записей в таблицу order_item
 INSERT INTO order_items (order_id, product_id, quantity)
 VALUES (10, 1, 2),
        (10, 3, 1),

@@ -6,7 +6,7 @@
 
 1. **Установка sqlc**
 ```bash
-go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
 2. **Установка migrate**

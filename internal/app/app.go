@@ -1,40 +1,96 @@
 package app
 
 import (
-	"context"
 	"fmt"
+	"github.com/ent1k1377/testovoe_20_03_24/internal/repository"
+	"github.com/ent1k1377/testovoe_20_03_24/internal/repository/postgres"
 	"github.com/ent1k1377/testovoe_20_03_24/internal/util"
 	"log"
 	"os"
 	"sort"
 	"strings"
-
-	db "github.com/ent1k1377/testovoe_20_03_24/db/sqlc"
 )
 
 // order представляет информацию о заказе.
 type order struct {
+	OrderID     int64
 	ProductID   int64
 	ProductName string
-	OrderID     int64
 	Quantity    int32
 	ShelveNames []string
 }
 
-// StartProcessingOrders начинает обработку заказов.
-func StartProcessingOrders(sqlStore *db.SQLStore, orderNumbers []string) error {
-	ctx := context.Background()
+type Product struct {
+	name     string
+	quantity int32
+}
 
+type GetOrderInfoRow struct {
+	ProductName     string `json:"product_name"`
+	ProductID       int64  `json:"product_id"`
+	OrderID         int64  `json:"order_id"`
+	Quantity        int32  `json:"quantity"`
+	ShelveName      string `json:"shelve_name"`
+	ShelveIsPrimary bool   `json:"shelve_is_primary"`
+}
+
+// StartProcessingOrders начинает обработку заказов.
+func StartProcessingOrders(storage repository.Storage, orderNumbers []string) error {
 	// Преобразование аргументов командной строки в числа
 	ordersId, err := util.ConvertStringsToIntegers(os.Args[1:])
 	if err != nil {
 		log.Fatal("Incorrect transmitted data", err)
 	}
 
-	// Получаем информацию о заказах из хранилища данных SQL.
-	ordersInfo, err := sqlStore.Queries.GetOrderInfo(ctx, ordersId)
-	if err != nil {
-		return fmt.Errorf("ошибка при получении информации о заказах: %w", err)
+	var ordersInfo []GetOrderInfoRow
+
+	q := make(map[int64]Product)
+
+	w := make(map[int64]int32)
+	for _, id := range ordersId {
+
+		orderItems, err := storage.OrderItem().GetOrderItems(id)
+		if err != nil {
+			return err
+		}
+
+		products, err := storage.Product().GetProducts(postgres.GetOrderItemsIds(orderItems))
+		if err != nil {
+			return err
+		}
+
+		productsShelves, err := storage.ProductShelf().GetProductsShelves(postgres.GetProductsShelvesIds(products))
+		if err != nil {
+			return err
+		}
+
+		for _, v := range orderItems {
+			w[v.ProductID] = v.Quantity
+		}
+		for _, v := range products {
+			q[v.ID] = Product{
+				name:     v.Name,
+				quantity: w[v.ID],
+			}
+		}
+		shelves := map[int64]string{
+			1: "А",
+			2: "Б",
+			3: "В",
+			4: "З",
+			5: "Ж",
+		}
+
+		for _, v := range productsShelves {
+			ordersInfo = append(ordersInfo, GetOrderInfoRow{
+				ProductName:     q[v.ProductID].name,
+				ProductID:       v.ProductID,
+				OrderID:         id,
+				Quantity:        q[v.ProductID].quantity,
+				ShelveName:      shelves[v.ShelvesID],
+				ShelveIsPrimary: v.IsPrimary,
+			})
+		}
 	}
 
 	fmt.Printf("=+=+=+=\nСтраница сборки заказов %s\n\n", strings.Join(orderNumbers, ","))
@@ -42,7 +98,7 @@ func StartProcessingOrders(sqlStore *db.SQLStore, orderNumbers []string) error {
 }
 
 // processOrders обрабатывает информацию о заказах.
-func processOrders(ordersInfo []db.GetOrderInfoRow) error {
+func processOrders(ordersInfo []GetOrderInfoRow) error {
 	// Создаем карту для хранения дополнительных стеллажей для каждого продукта.
 	additionalShelves := make(map[int64][]string)
 
@@ -59,9 +115,9 @@ func processOrders(ordersInfo []db.GetOrderInfoRow) error {
 		additionalShelves[o.ProductID] = []string{o.ShelveName}
 
 		orders[o.ShelveName] = append(orders[o.ShelveName], order{
+			OrderID:     o.OrderID,
 			ProductID:   o.ProductID,
 			ProductName: o.ProductName,
-			OrderID:     o.OrderID,
 			Quantity:    o.Quantity,
 			ShelveNames: make([]string, 0),
 		})

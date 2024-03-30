@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	db "github.com/ent1k1377/testovoe_20_03_24/db/sqlc"
 	"github.com/ent1k1377/testovoe_20_03_24/internal/app"
+	"github.com/ent1k1377/testovoe_20_03_24/internal/repository/postgres"
 	"github.com/ent1k1377/testovoe_20_03_24/internal/util"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -29,11 +29,11 @@ func main() {
 	defer conn.Close()
 
 	// Создание хранилища для взаимодействия с базой данных
-	store := db.NewStore(conn)
+	repo := postgres.NewRepository(conn)
 
 	// Запуск приложения
-	if err := app.StartProcessingOrders(store, os.Args[1:]); err != nil {
-		log.Fatal("app doesnt work", err)
+	if err := app.StartProcessingOrders(repo, os.Args[1:]); err != nil {
+		log.Fatal("app doesnt work: ", err)
 	}
 }
 
