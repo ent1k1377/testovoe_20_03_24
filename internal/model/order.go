@@ -1,6 +1,5 @@
 package model
 
-// Order представляет информацию о заказе.
 type Order struct {
 	OrderID     int64
 	ProductID   int64
@@ -9,12 +8,7 @@ type Order struct {
 	ShelveNames []string
 }
 
-type Product struct {
-	Name     string
-	Quantity int32
-}
-
-type GetOrderInfoRow struct {
+type OrderInfo struct {
 	ProductName     string `json:"product_name"`
 	ProductID       int64  `json:"product_id"`
 	OrderID         int64  `json:"order_id"`

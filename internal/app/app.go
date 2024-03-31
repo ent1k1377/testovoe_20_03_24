@@ -22,5 +22,5 @@ func (a *App) Run() error {
 		log.Fatal("Incorrect transmitted data", err)
 	}
 
-	return service.StartProcessingOrders(a.storage, ordersId)
+	return service.HandleOrdersProcessing(a.storage, ordersId)
 }

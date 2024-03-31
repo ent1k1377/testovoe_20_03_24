@@ -10,22 +10,24 @@ import (
 	"strings"
 )
 
-// StartProcessingOrders начинает обработку заказов.
-func StartProcessingOrders(storage repository.Storage, ordersIds []int64) error {
-	var ordersInfo []model.GetOrderInfoRow
+// HandleOrdersProcessing начинает обработку заказов.
+func HandleOrdersProcessing(storage repository.Storage, ordersIds []int64) error {
+	var ordersInfo []model.OrderInfo
 
-	q := make(map[int64]model.Product)
+	// Хранит key: id продукта и value: структуру Product
+	productByID := make(map[int64]model.Product)
 
-	w := make(map[int64]int32)
+	// Хранит key: id продукта, value: количество продукта в заказе
+	productOrderQuantity := make(map[int64]int32)
 
 	shelves, err := storage.Shelf().GetAllShelves()
 	if err != nil {
 		return err
 	}
 
-	shelvesM := make(map[int64]string)
+	shelfNameByShelfID := make(map[int64]string)
 	for _, v := range shelves {
-		shelvesM[v.ID] = v.Name
+		shelfNameByShelfID[v.ID] = v.Name
 	}
 
 	for _, id := range ordersIds {
@@ -45,22 +47,22 @@ func StartProcessingOrders(storage repository.Storage, ordersIds []int64) error 
 		}
 
 		for _, v := range orderItems {
-			w[v.ProductID] = v.Quantity
+			productOrderQuantity[v.ProductID] = v.Quantity
 		}
 		for _, v := range products {
-			q[v.ID] = model.Product{
+			productByID[v.ID] = model.Product{
 				Name:     v.Name,
-				Quantity: w[v.ID],
+				Quantity: productOrderQuantity[v.ID],
 			}
 		}
 
 		for _, v := range productsShelves {
-			ordersInfo = append(ordersInfo, model.GetOrderInfoRow{
-				ProductName:     q[v.ProductID].Name,
+			ordersInfo = append(ordersInfo, model.OrderInfo{
+				ProductName:     productByID[v.ProductID].Name,
 				ProductID:       v.ProductID,
 				OrderID:         id,
-				Quantity:        q[v.ProductID].Quantity,
-				ShelveName:      shelvesM[v.ShelvesID],
+				Quantity:        productByID[v.ProductID].Quantity,
+				ShelveName:      shelfNameByShelfID[v.ShelvesID],
 				ShelveIsPrimary: v.IsPrimary,
 			})
 		}
@@ -71,7 +73,7 @@ func StartProcessingOrders(storage repository.Storage, ordersIds []int64) error 
 }
 
 // processOrders обрабатывает информацию о заказах.
-func processOrders(ordersInfo []model.GetOrderInfoRow) error {
+func processOrders(ordersInfo []model.OrderInfo) error {
 	// Создаем карту для хранения дополнительных стеллажей для каждого продукта.
 	additionalShelves := make(map[int64][]string)
 

@@ -15,6 +15,3 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgresql://root:root@localhost:5411/root?sslmode=disable" -verbose down
 
-sqlc:
-	sqlc generate
-
